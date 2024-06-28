@@ -1,0 +1,6 @@
+@M16API_HostAddress = http://localhost:5057
+
+GET {{M16API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
