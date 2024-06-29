@@ -13,11 +13,11 @@ namespace M16API.Services
         private readonly ApplicationDbContext _context;
         private static Cache<string, Coordinates> _coordinatesCache;
 
-        public MissionService(ApplicationDbContext context, IConfiguration configuration)
+        public MissionService(ApplicationDbContext context, IConfiguration configuration, Cache<string, Coordinates> cache)
         {
             _googleMapsApiKey = configuration["GoogleMapsApiKey"];
             _context = context;
-            _coordinatesCache = new Cache<string, Coordinates>(5);
+            _coordinatesCache = cache;
         }
 
         public async Task<List<Mission>> GetMissions()
@@ -71,59 +71,46 @@ namespace M16API.Services
 
         public async Task<FindClosestResponse> GetClosestMission(string targetLocation)
         {
-            try
+            Mission closestMission = null;
+            double closestDistance = double.MaxValue;
+            Coordinates targetCoordinates;
+            if (DistanceUtils.IsCoordinates(targetLocation))
             {
-                Mission closestMission = null;
-                double closestDistance = double.MaxValue;
-                Coordinates targetCoordinates;
-                if (DistanceUtils.IsCoordinates(targetLocation))
-                {
-                    targetCoordinates = DistanceUtils.GetCoordinatesFromString(targetLocation);
-                }
-                else
-                {
-                    targetCoordinates = await GetCoordinatesFromAddress(targetLocation);
-                }
-                
-                if (targetCoordinates == null)
-                {
-                    // return BadRequest("Invalid target location");
-                    // return "Invalid target location";
-                    return null;
-                }
-            
-                // todo: change this:
-                var missions = await _context.Missions.ToListAsync();
-                foreach (var mission in missions)
-                {
-                    var missionCoordinates = new Coordinates { Lat = mission.Latitude, Lon = mission.Longitude };
-                    var distance = DistanceUtils.GetDistance(targetCoordinates, missionCoordinates);
-                    if (distance < closestDistance)
-                    {
-                        closestDistance = distance;
-                        closestMission = mission;
-                    }
-                }
-            
-                if (closestMission == null)
-                {
-                    // return NotFound("No missions found");
-                    // return "No missions found";
-                    return null;
-                }
-            
-                var response = new FindClosestResponse
-                {
-                    ClosestMission = closestMission,
-                    Distance = closestDistance
-                };
-                return response;
+                targetCoordinates = DistanceUtils.GetCoordinatesFromString(targetLocation);
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine(e);
-                throw;
+                targetCoordinates = await GetCoordinatesFromAddress(targetLocation);
             }
+            
+            if (targetCoordinates == null)
+            {
+                return null;
+            }
+            
+            var missions = await _context.Missions.ToListAsync();
+            foreach (var mission in missions)
+            {
+                var missionCoordinates = new Coordinates { Lat = mission.Latitude, Lon = mission.Longitude };
+                var distance = DistanceUtils.GetDistance(targetCoordinates, missionCoordinates);
+                if (distance < closestDistance)
+                {
+                    closestDistance = distance;
+                    closestMission = mission;
+                }
+            }
+        
+            if (closestMission == null)
+            {
+                return null;
+            }
+        
+            var response = new FindClosestResponse
+            {
+                ClosestMission = closestMission,
+                Distance = closestDistance
+            };
+            return response;
         }
         
         private static async Task<Coordinates> GetCoordinatesFromAddress(string address)

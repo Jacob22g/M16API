@@ -22,3 +22,8 @@ The project contains usage of google geocoding api to get coordinates from addre
 Without a valid api key it wil generate random coordiantes instead.
 
 - Add an api key to `appsetting.json` - `"GoogleMapsApiKey": "<YOUR_GOOGLE_MAPS_API_KEY>"`.
+
+**Future work that can be done:**
+
+- Improve error handling
+- Add logs
