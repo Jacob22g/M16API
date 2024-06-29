@@ -9,10 +9,10 @@ The project is an API
 
 **Steps to run**
 
-1. run the shell file `run_postgres.sh` to run the PostgreSQL container.
-2. run Migration to initial the DB.
-3. `dotnet build`
-4. `dotnet run`
+1. run the shell file `./run_postgres.sh` to run the PostgreSQL Docker container.
+2. run Migration to initial the DB - `dotnet ef database update`.
+3. `dotnet build`.
+4. `dotnet run`.
 
 **For using GoogleMapsApi**
 
