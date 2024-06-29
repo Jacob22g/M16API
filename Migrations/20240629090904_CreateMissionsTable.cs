@@ -11,6 +11,7 @@ namespace M16API.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // todo: run all migration on app run!
             migrationBuilder.CreateTable(
                 name: "Missions",
                 columns: table => new

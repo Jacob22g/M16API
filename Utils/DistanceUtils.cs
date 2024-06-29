@@ -3,17 +3,44 @@ using M16API.Models;
 
 namespace M16API.Utils
 {
-    public static class MissionUtils
+    public static class DistanceUtils
     {
+        private static readonly Regex coordinateRegex = new Regex(@"^-?\d+(\.\d+)?,-?\d+(\.\d+)?$");
     
         public static double GetDistance(Coordinates origin, Coordinates destination)
         {
             return HaversineDistance(origin, destination);
         }
         
+        // public static (Coordinates coordinates) ParseCoordinates(string input)
+        // {
+        //     // Define the regex pattern
+        //     string pattern = @"^(?<lat>-?\d+(\.\d+)?),\s*(?<lng>-?\d+(\.\d+)?)$";
+        //     // Create a regex object
+        //     Regex regex = new Regex(pattern);
+        //
+        //     // Match the input string against the pattern
+        //     Match match = regex.Match(input);
+        //
+        //     // Check if the match was successful
+        //     if (match.Success)
+        //     {
+        //         // Extract the latitude and longitude from the match groups
+        //         double lat = double.Parse(match.Groups["lat"].Value);
+        //         double lng = double.Parse(match.Groups["lng"].Value);
+        //
+        //         // Return the coordinates as a tuple
+        //         return new Coordinates(lat, lng);
+        //     }
+        //     else
+        //     {
+        //         // Return null if the input string does not match the pattern
+        //         return null;
+        //     }
+        // }
+        
         public static bool IsCoordinates(string input)
         {
-            var coordinateRegex = new Regex(@"^-?\d+(\.\d+)?,-?\d+(\.\d+)?$");
             return coordinateRegex.IsMatch(input);
         }
         
@@ -27,6 +54,22 @@ namespace M16API.Utils
                 return null;
             }
             return new Coordinates { Lat = lat, Lon = lng };
+        }
+
+        /**
+         * Latitude : max/min 90.0000000 to -90.0000000
+         * Longitude : max/min 180.0000000 to -180.0000000
+         */
+        public static Coordinates GenerateRandomCoordinates()
+        {
+            var random = new Random();
+            double latitude = random.NextDouble() * 180 - 90;
+            double longitude = random.NextDouble() * 360 - 180;
+            return new Coordinates
+            {
+                Lat = latitude,
+                Lon = longitude
+            };
         }
         
         private static double HaversineDistance(Coordinates coord1, Coordinates coord2)

@@ -1,8 +1,3 @@
-// using GoogleApi;
-// using GoogleApi.Entities.Common;
-// using GoogleApi.Entities.Maps.DistanceMatrix.Request;
-// using GoogleApi.Entities.Maps.Geocoding.Address.Request;
-// using GoogleApi.Entities.Maps.Geocoding.Coordinate.Request;
 using Microsoft.AspNetCore.Mvc;
 using M16API.Models;
 using M16API.Services;
@@ -13,9 +8,9 @@ namespace M16API.Controllers
     [Route("[controller]")]
     public class MissionsController : ControllerBase
     {
-        private readonly IMissionService _missionService;
+        private readonly MissionService _missionService;
 
-        public MissionsController(IMissionService missionService)
+        public MissionsController(MissionService missionService)
         {
             _missionService = missionService;
         }
